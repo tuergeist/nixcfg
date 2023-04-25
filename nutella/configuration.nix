@@ -9,6 +9,7 @@
       [ # Include the results of the hardware scan.
         ./hardware-configuration.nix
         inputs.home-manager.nixosModules.home-manager
+        ../hosts/common/nix.nix
       ];
 
     # Bootloader.
@@ -125,14 +126,12 @@
           home-manager
           docker
           google-chrome
-          direnv
+          nix-direnv
           zsh
           git
           gittyup
-    #      jdk18
           libsForQt5.kdenlive
           mediainfo
-          #insync-v3
           rclone
           tlp
           jetbrains.pycharm-professional
@@ -180,7 +179,7 @@
     services.power-profiles-daemon.enable = false;
 
     # flakes
-    nix.settings.experimental-features = [ "nix-command" "flakes" ];
+    # nix.settings.experimental-features = [ "nix-command" "flakes" ];
     # Zsh
     programs.zsh.enable = true;
 

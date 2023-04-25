@@ -8,13 +8,16 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+    };
   };
 
   outputs = inputs@{ self, ... }:
     let
 
       inherit (inputs.nixpkgs.lib) nixosSystem;
-
+      inherit (inputs.flake-utils.lib) eachDefaultSystem;
     in
     {
 
@@ -30,5 +33,14 @@
       };
 
 
-    };
+    } // (eachDefaultSystem (system:
+      let pkgs = import inputs.nixpkgs { inherit system; }; in
+      {
+
+        devShell = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            tig
+          ];
+        };
+      }));   
 } 
