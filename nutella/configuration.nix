@@ -76,6 +76,10 @@
     # for a WiFi printer
     services.avahi.openFirewall = true;
 
+
+    # steam https://github.com/NixOS/nixpkgs/issues/47932#issuecomment-447508411
+    hardware.opengl.driSupport32Bit = true;
+    programs.steam.enable = true;
     # Thunderbolt
     services.hardware.bolt.enable = true;
 
@@ -104,7 +108,7 @@
       shell = pkgs.zsh;
       isNormalUser = true;
       description = "Christoph Becker";
-      extraGroups = [ "networkmanager" "wheel" "docker" ];
+      extraGroups = [ "networkmanager" "wheel" "docker" "dialout" ];
       packages = with pkgs; [
         firefox
         thunderbird
@@ -112,6 +116,8 @@
         mc
         obsidian
         killall
+        thonny
+        steam
       ];
     };
 
@@ -140,6 +146,10 @@
           slack
           gnomeExtensions.vitals
           canon-cups-ufr2
+          nodejs
+          insync
+          python39Full
+          jdk19
     ];
   nixpkgs.config.permittedInsecurePackages = [
                   "openjdk-18+36"
@@ -148,8 +158,8 @@
 
     virtualisation.docker.enable = true;
 
-    virtualisation.virtualbox.host.enable = true;
-    users.extraGroups.vboxusers.members = [ "cb" ];
+    #virtualisation.virtualbox.host.enable = true;
+    #users.extraGroups.vboxusers.members = [ "cb" ];
 
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
