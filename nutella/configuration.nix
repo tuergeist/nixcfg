@@ -116,29 +116,40 @@
       isNormalUser = true;
       description = "Christoph Becker";
       extraGroups = [ "networkmanager" "wheel" "docker" "dialout" ];
-      packages = with pkgs; [
-        firefox
-        thunderbird
-        vim
-        mc
-        obsidian
-        killall
-        thonny
-        steam
-      ];
     };
 
     # Allow unfree packages
     nixpkgs.config.allowUnfree = true;
 
+
+    
     # List packages installed in system profile. To search, run:
     # $ nix search wget
-    environment.systemPackages = with pkgs; [
-          vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+    environment.systemPackages = let
+      chromeSymlinkPackage = pkgs.writeShellScriptBin "google-chrome"
+          "exec -a $0 ${pkgs.google-chrome}/bin/google-chrome-stable $@";
+  
+    in with pkgs; [
+	firefox
+	thunderbird
+	vim
+        mc
+        dig
+        gcc
+	obsidian
+	killall
+	thonny
+	steam
+	spotify
+	spotify-tray
+	terminator
+          vim 
           wget
           home-manager
           docker
           google-chrome
+          chromeSymlinkPackage
+          chromedriver
           nix-direnv
           zsh
           git
@@ -147,16 +158,29 @@
           mediainfo
           rclone
           tlp
+          jhead
           jetbrains.pycharm-professional
           pipenv
-          python3Full
+          python311Full
+          python311Packages.virtualenv
+          python311Packages.pip
+          python311Packages.pyarrow
+          streamlit
+#          python310Full
+          pdm
           slack
           gnomeExtensions.vitals
           canon-cups-ufr2
           nodejs
           insync
-          python39Full
+	libxkbcommon
+        #python39Full
+          jdk17
           jdk19
+          gradle
+          jq
+          krita
+          
     ];
   nixpkgs.config.permittedInsecurePackages = [
                   "openjdk-18+36"
@@ -200,6 +224,8 @@
     # Zsh
     programs.zsh.enable = true;
 
+    # Enable java to set JAVA_HOME
+    programs.java.enable = true;
 
     # Open ports in the firewall.
     # networking.firewall.allowedTCPPorts = [ ... ];

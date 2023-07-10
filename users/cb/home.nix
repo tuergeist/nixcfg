@@ -16,17 +16,12 @@
     pkgs.direnv
     pkgs.libxcrypt
     pkgs.powerline-fonts
-    pkgs.terminator
     pkgs.wget
     pkgs.heroku
 
-    pkgs.spotify
-    pkgs.spotify-tray
-    pkgs.python310Packages.numpy
-    pkgs.python310Packages.pandas
-    pkgs.pdm
 
     pkgs.jetbrains.idea-ultimate
+    pkgs.jetbrains.webstorm
     pkgs.maven
 #    pkgs.jdk19
 
@@ -53,7 +48,7 @@
     enableCompletion = true;
     enableAutosuggestions = true;
     autocd = true;
-    enableSyntaxHighlighting = true;
+    syntaxHighlighting.enable = true;
     plugins  = [
      {
         name = "zsh-nix-shell";
