@@ -13,6 +13,7 @@
     pkgs.fortune
     pkgs.unzip
     pkgs.git
+    pkgs.git-lfs
     pkgs.direnv
     pkgs.libxcrypt
     pkgs.powerline-fonts
@@ -88,6 +89,7 @@
       co = "checkout";
       st = "status";
     };
+    lfs.enable = true;
   };
 
   dconf.settings = {

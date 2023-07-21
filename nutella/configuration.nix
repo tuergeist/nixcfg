@@ -142,7 +142,8 @@
 	steam
 	spotify
 	spotify-tray
-	terminator
+        terminator
+        ngrok
           vim 
           wget
           home-manager
@@ -153,6 +154,7 @@
           nix-direnv
           zsh
           git
+          git-lfs
           gittyup
           libsForQt5.kdenlive
           mediainfo
@@ -160,6 +162,14 @@
           tlp
           jhead
           jetbrains.pycharm-professional
+          
+          poedit
+          gettext
+          aspell
+          aspellDicts.de
+          aspellDicts.en
+          aspellDicts.en-computers
+
           pipenv
           python311Full
           python311Packages.virtualenv
