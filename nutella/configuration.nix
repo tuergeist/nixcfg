@@ -12,7 +12,12 @@
         ../hosts/common/nix.nix
         ../users/cb
       ];
-
+      
+    # fix for buildifiert swbng  
+    system.activationScripts.binbash = ''
+    mkdir -m 0755 -p /bin
+    ln -sfn ${pkgs.bash}/bin/bash /bin/bash
+  '';
     # Bootloader.
     boot.loader.systemd-boot.enable = true;
     boot.loader.efi.canTouchEfiVariables = true;
@@ -67,6 +72,7 @@
     services.xserver = {
       layout = "us";
       xkbVariant = "altgr-intl";
+      videoDrivers = ["nvidia"];
     };
 
     # Enable CUPS to print documents.
@@ -79,14 +85,28 @@
 
 
     # steam https://github.com/NixOS/nixpkgs/issues/47932#issuecomment-447508411
-    hardware.opengl.driSupport32Bit = true;
+    hardware.opengl = {
+      driSupport32Bit = true;
+      enable = true;
+
+
+    };
     programs.steam.enable = true;
     # Thunderbolt
     services.hardware.bolt.enable = true;
 
+    hardware.rtl-sdr.enable = true;
     # Enable sound with pipewire.
     sound.enable = true;
     hardware.pulseaudio.enable = false;
+
+    hardware.nvidia = {
+      modesetting.enable = true;
+#      prime.sync.allowExternalGpu = true;
+#      prime.offload.enable = true;
+      nvidiaSettings = true;
+    };
+
     security.rtkit.enable = true;
     services.pipewire = {
       enable = true;
@@ -115,7 +135,7 @@
       shell = pkgs.zsh;
       isNormalUser = true;
       description = "Christoph Becker";
-      extraGroups = [ "networkmanager" "wheel" "docker" "dialout" ];
+      extraGroups = [ "networkmanager" "wheel" "docker" "dialout" "plugdev" ];
     };
 
     # Allow unfree packages
@@ -175,8 +195,9 @@
           python311Packages.virtualenv
           python311Packages.pip
           python311Packages.pyarrow
-          streamlit
-#          python310Full
+          python311Packages.pillow
+          python311Packages.numpy
+          #streamlit
           pdm
           slack
           gnomeExtensions.vitals
@@ -185,16 +206,29 @@
           insync
 	libxkbcommon
         #python39Full
-          jdk17
-          jdk19
+          #jdk17
+          #jdk19
           gradle
           jq
           krita
-          
+         # sdr
+         rtl-sdr 
+         rtl_433
+         wsjtx
+         gqrx
+         sdrpp
+         # video
+         losslesscut-bin
+         libsForQt5.kdenlive
+         # building
+         cmake
+         gnumake
+         openssl
+         # OCR
+         tesseract
+         # kartenlernen
+         anki
     ];
-  nixpkgs.config.permittedInsecurePackages = [
-                  "openjdk-18+36"
-                ];
 
 
     virtualisation.docker.enable = true;
@@ -271,4 +305,6 @@ table.insert(alsa_monitor.rules, {
   }    
 })
   '';
+
+
 }

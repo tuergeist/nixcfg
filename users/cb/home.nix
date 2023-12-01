@@ -23,7 +23,7 @@
 
     pkgs.jetbrains.idea-ultimate
     pkgs.jetbrains.webstorm
-    pkgs.maven
+#    pkgs.maven
 #    pkgs.jdk19
 
     pkgs.nix-direnv
@@ -149,4 +149,7 @@
       enable = true;
     };
   };
+
+  # set global LD LIb ath
+  home.sessionVariables.LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
 }
