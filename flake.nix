@@ -27,8 +27,14 @@
         specialArgs = { inherit inputs; };
         modules = [
           ./nutella
-#          ./hosts/common/users/betaboon.nix
-#          ./homes/betaboon
+        ];
+      };
+
+      nixosConfigurations.nix1 = nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./nix1
         ];
       };
 
