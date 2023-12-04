@@ -4,30 +4,36 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports =
-    [ (modulesPath + "/installer/scan/not-detected.nix")
-    ];
+  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "usbhid" "sd_mod" "rtsx_pci_sdmmc" ];
+  boot.initrd.availableKernelModules = [
+    "xhci_pci"
+    "ahci"
+    "nvme"
+    "usb_storage"
+    "usbhid"
+    "sd_mod"
+    "rtsx_pci_sdmmc"
+  ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/abd084f2-13e1-44dd-baad-f0f25194e9f3";
-      fsType = "ext4";
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/abd084f2-13e1-44dd-baad-f0f25194e9f3";
+    fsType = "ext4";
+  };
 
-  boot.initrd.luks.devices."luks-0664968d-53dc-4117-9a5d-6fae7a0c0f56".device = "/dev/disk/by-uuid/0664968d-53dc-4117-9a5d-6fae7a0c0f56";
+  boot.initrd.luks.devices."luks-0664968d-53dc-4117-9a5d-6fae7a0c0f56".device =
+    "/dev/disk/by-uuid/0664968d-53dc-4117-9a5d-6fae7a0c0f56";
 
-  fileSystems."/boot/efi" =
-    { device = "/dev/disk/by-uuid/36A7-A7B5";
-      fsType = "vfat";
-    };
+  fileSystems."/boot/efi" = {
+    device = "/dev/disk/by-uuid/36A7-A7B5";
+    fsType = "vfat";
+  };
 
   swapDevices =
-    [ { device = "/dev/disk/by-uuid/8210509a-7041-4313-8b2d-aac779ce9ddd"; }
-    ];
+    [{ device = "/dev/disk/by-uuid/8210509a-7041-4313-8b2d-aac779ce9ddd"; }];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's
@@ -40,7 +46,8 @@
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.intel.updateMicrocode =
+    lib.mkDefault config.hardware.enableRedistributableFirmware;
   # high-resolution display
-#  hardware.video.hidpi.enable = lib.mkDefault true;
+  #  hardware.video.hidpi.enable = lib.mkDefault true;
 }
