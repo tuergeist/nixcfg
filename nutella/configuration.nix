@@ -225,6 +225,11 @@
     anki
   ];
 
+  nixpkgs.config.permittedInsecurePackages = [
+                "electron-25.9.0"
+              ];
+
+
   virtualisation.docker.enable = true;
 
   #virtualisation.virtualbox.host.enable = true;
@@ -297,6 +302,11 @@
         ["api.alsa.headroom"] = 1024,
       }    
     })
+  '';
+
+  # sony buzz devices
+  services.udev.extraRules = ''
+  SUBSYSTEMS=="usb", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0002", MODE="0666"
   '';
 
 }
