@@ -1,17 +1,19 @@
 { lib
 , writeShellScript
-, buildFHSEnvBubblewrap
+, buildFHSEnv
 , stdenvNoCC
 , fetchurl
 , autoPatchelfHook
 , dpkg
 , nss
+, cacert
 , libvorbis
 , libdrm
 , libGL
 , wayland
 , xkeyboard_config
 , libthai
+, libsForQt5
 }:
 
 let
@@ -50,6 +52,12 @@ let
       sha256 = "sha256-Fu3tmnYhcm6xIEnkTtpmMJmEgIUnZdLsAtmIktWdrRs=";
       #sha256 = lib.fakeSha256;
     };
+ 
+    nativeBuildInputs = [
+       dpkg
+       autoPatchelfHook
+       libsForQt5.qt5.wrapQtAppsHook
+];
 
     buildInputs = [
       nss
@@ -58,9 +66,10 @@ let
       libGL
       wayland
       libthai
+      libsForQt5.qt5.qtvirtualkeyboard
     ];
 
-    nativeBuildInputs = [ autoPatchelfHook dpkg ];
+#    nativeBuildInputs = [ autoPatchelfHook dpkg ];
 
     unpackPhase = ''
       dpkg-deb --fsys-tarfile $src | tar -x --no-same-permissions --no-same-owner
@@ -73,13 +82,13 @@ let
       cp -R usr/* $out/
 
       # use system glibc
-      rm $out/lib/insync/{libgcc_s.so.1,libstdc++.so.6}
+ #     rm $out/lib/insync/{libgcc_s.so.1,libstdc++.so.6}
 
       # remove badly packaged plugins
-      rm $out/lib/insync/PySide2/plugins/platforminputcontexts/libqtvirtualkeyboardplugin.so
+  #    rm $out/lib/insync/PySide2/plugins/platforminputcontexts/libqtvirtualkeyboardplugin.so
 
       # remove the unused vendor wrapper
-      rm $out/bin/insync
+   #   rm $out/bin/insync
 
       runHook postInstall
     '';
@@ -88,31 +97,57 @@ let
     dontStrip = true;
   };
 
-in buildFHSEnvBubblewrap {
+in buildFHSEnv {
   name = pname;
   inherit meta;
 
   targetPkgs = pkgs: with pkgs; [
-    insync-pkg
+    cacert
     libudev0-shim
+    insync-pkg
   ];
+
+  extraInstallCommands = ''
+￼    cp -rsHf "${insync-pkg}"/share $out
+￼  '';
 
   runScript = writeShellScript "insync-wrapper.sh" ''
     # QT_STYLE_OVERRIDE was used to suppress a QT warning, it should have no actual effect for this binary.
-    echo Unsetting QT_STYLE_OVERRIDE=$QT_STYLE_OVERRIDE
-    echo Unsetting QT_QPA_PLATFORMTHEME=$QT_QPA_PLATFORMTHEME
-    unset QT_STYLE_OVERRIDE
-    unset QPA_PLATFORMTHEME
+    #echo Unsetting QT_STYLE_OVERRIDE=$QT_STYLE_OVERRIDE
+    #echo Unsetting QT_QPA_PLATFORMTHEME=$QT_QPA_PLATFORMTHEME
+    #unset QT_STYLE_OVERRIDE
+    #unset QPA_PLATFORMTHEME
 
     # xkb configuration needed: https://github.com/NixOS/nixpkgs/issues/236365
     export XKB_CONFIG_ROOT=${xkeyboard_config}/share/X11/xkb/
-    echo XKB_CONFIG_ROOT=$XKB_CONFIG_ROOT
+    #echo XKB_CONFIG_ROOT=$XKB_CONFIG_ROOT
 
     # For debuging:
     # export QT_DEBUG_PLUGINS=1
     # find -L /usr/share -name "*insync*"
 
-    exec /usr/lib/insync/insync "$@"
+    #exec /usr/lib/insync/insync "$@"
+
+
+        export LC_TIME=C
+    run_insync="exec /usr/lib/insync/insync"
+    # This is a workaround for an unidentified issue:
+    #
+    # When bbwrap-ed insync is launched in daemon mode, lots of red-herring issues appear. Namely, certificate
+    # not found issues.
+    #
+    # This workaround simply does not allow insync to be run in a daemon unless explictly doing so.
+    if [ "$1" == start ]; then
+        shift
+        # append the output to out.txt
+        mkdir -p ~/.config/Insync
+        $run_insync start --no-daemon "$@" &>>~/.config/Insync/out.txt
+    elif [ "$1" == start_daemon ]; then
+        shift
+        $run_insync start "$@"
+    else
+        $run_insync "$@"
+    fi
     '';
 
   # As intended by this bubble wrap, share as much namespaces as possible with user.
@@ -123,6 +158,6 @@ in buildFHSEnvBubblewrap {
   unshareUts    = false;
   unshareCgroup = false;
   # Since "insync start" command starts a daemon, this daemon should die with it.
-  dieWithParent = false;
+  dieWithParent = true;
 }
 

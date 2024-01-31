@@ -41,6 +41,17 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+  # Disable Speedport port scanns as log entries
+  networking.firewall.extraCommands = ''
+    # Silence refusal of speedport scans
+    iptables \
+      --insert nixos-fw-log-refuse 1 \
+      --source 172.16.2.1 \
+      --protocol tcp \
+      --match multiport \
+      --dports 80,443,8081,8080 \
+      --jump nixos-fw-refuse
+  '';
 
   # Set your time zone.
   time.timeZone = "Europe/Berlin";

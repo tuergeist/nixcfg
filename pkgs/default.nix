@@ -4,5 +4,5 @@ let
 in
 with lib;
 {
-  insync = callPackage ./insync {} ;
+#  insync = callPackage ./insync {} ;
 }

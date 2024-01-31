@@ -20,13 +20,14 @@
       inherit (inputs.flake-utils.lib) eachDefaultSystem;
     in
     {
-
+      overlays.default = import ./pkgs;
 
       nixosConfigurations.nutella = nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inherit inputs; };
         modules = [
           ./nutella
+          { nixpkgs.overlays = [ self.overlays.default ]; }
         ];
       };
 
