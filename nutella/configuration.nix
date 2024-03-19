@@ -80,8 +80,8 @@
 
   # Configure keymap in X11
   services.xserver = {
-    layout = "us";
-    xkbVariant = "altgr-intl";
+    xkb.layout = "us";
+    xkb.variant = "altgr-intl";
     videoDrivers = [ "nvidia" ];
   };
 
@@ -89,7 +89,7 @@
   services.printing.enable = true;
   services.printing.drivers = [ pkgs.cnijfilter2 ];
   services.avahi.enable = true;
-  services.avahi.nssmdns = true;
+  services.avahi.nssmdns4 = true;
   # for a WiFi printer
   services.avahi.openFirewall = true;
 
@@ -206,6 +206,7 @@
     #streamlit
     pdm
     slack
+    beeper
     gnomeExtensions.vitals
     canon-cups-ufr2
     nodejs
@@ -234,6 +235,15 @@
     tesseract
     # kartenlernen
     anki
+
+    # Deployment
+    terraform
+    awscli2
+    # edtor
+    gedit
+
+    # office
+    libreoffice-fresh
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
@@ -296,8 +306,14 @@
   system.stateVersion = "22.11"; # Did you read the comment?
 
   # Test fix sound problems on nuc
-  environment.etc."wireplumber/main.lua.d/99-custom.lua".text = ''
-    table.insert(alsa_monitor.rules, {
+  ## old
+  # environment.etc."wireplumber/main.lua.d/99-custom.lua".text = ''
+  ## after 292115 is merged
+  #services.pipewire.wireplumber.extraLuaConfig.main."99-custom" = '' 
+  ## 12.3.24
+  services.pipewire.wireplumber.configPackages = [
+  (pkgs.writeTextDir "share/wireplumber/main.lua.d/99-alsa.lua" ''
+    alsa_monitor.rules = {
       matches = {
           {
             -- Matches all sources.
@@ -312,8 +328,8 @@
       apply_properties = {
         ["api.alsa.headroom"] = 1024,
       }    
-    })
-  '';
+    }
+  '')];
 
   # sony buzz devices
   services.udev.extraRules = ''
