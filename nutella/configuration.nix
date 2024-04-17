@@ -227,6 +227,8 @@
     # video
     losslesscut-bin
     libsForQt5.kdenlive
+    # Sound
+    pavucontrol
     # building
     cmake
     gnumake
@@ -244,6 +246,12 @@
 
     # office
     libreoffice-fresh
+    # clipboard manager, gnome extension
+     gnome.dconf-editor
+    gnome.gnome-tweaks
+    gnomeExtensions.gnome-clipboard
+    gnomeExtensions.clipboard-history
+    gsound
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
