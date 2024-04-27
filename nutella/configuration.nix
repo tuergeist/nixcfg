@@ -53,6 +53,27 @@
       --jump nixos-fw-refuse
   '';
 
+
+  services.nebula.networks."nebula1" = {
+    ca = "/opt/nebula/ca.crt";
+    #tun.disable = true;
+    cert = "/opt/nebula/host.crt";
+    key = "/opt/nebula/host.key";
+    lighthouses = [ "192.168.100.1" ];
+    staticHostMap = { "192.168.100.1" = [ "18.196.133.48:4242" ]; };
+    firewall.outbound = [{
+      host = "any";
+      port = "any";
+      proto = "any";
+    }];
+    firewall.inbound = [{
+      host = "any";
+      port = "any";
+      proto = "any";
+    }];
+    #  relays = [ "192.168.100.100" ];
+  };
+
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
 
@@ -252,6 +273,9 @@
     gnomeExtensions.gnome-clipboard
     gnomeExtensions.clipboard-history
     gsound
+    
+    # peer network
+    nebula
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
@@ -343,5 +367,7 @@
   services.udev.extraRules = ''
   SUBSYSTEMS=="usb", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0002", MODE="0666"
   '';
+
+
 
 }
