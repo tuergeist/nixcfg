@@ -19,7 +19,8 @@
     pkgs.powerline-fonts
     pkgs.wget
     pkgs.heroku
-
+    # pdf tools
+    pkgs.mupdf
 
     pkgs.jetbrains.idea-ultimate
     pkgs.jetbrains.webstorm
@@ -27,6 +28,8 @@
 #    pkgs.jdk19
 
     pkgs.nix-direnv
+    pkgs.poppler_utils
+  pkgs.poetry
   ];
 
   # This value determines the Home Manager release that your

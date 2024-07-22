@@ -73,7 +73,12 @@
     }];
     #  relays = [ "192.168.100.100" ];
   };
-
+services.zerotierone = {
+  enable = true;
+  joinNetworks = [
+    "e3918db4839f8cb9"
+  ];
+};
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
 
@@ -115,10 +120,9 @@
   services.avahi.openFirewall = true;
 
   # steam https://github.com/NixOS/nixpkgs/issues/47932#issuecomment-447508411
-  hardware.opengl = {
-    driSupport32Bit = true;
-    enable = true;
-
+  hardware.graphics ={
+    enable = true;  
+    enable32Bit = true;
   };
   programs.steam.enable = true;
   # Thunderbolt
@@ -126,7 +130,7 @@
 
   hardware.rtl-sdr.enable = true;
   # Enable sound with pipewire.
-  sound.enable = true;
+  #sound.enable = true;
   hardware.pulseaudio.enable = false;
 
   hardware.nvidia = {
@@ -237,6 +241,7 @@
     #jdk17
     #jdk19
     gradle
+    jdk21
     jq
     krita
     # sdr
@@ -257,7 +262,7 @@
     # OCR
     tesseract
     # kartenlernen
-    anki
+    #anki
 
     # Deployment
     terraform
@@ -268,8 +273,8 @@
     # office
     libreoffice-fresh
     # clipboard manager, gnome extension
-     gnome.dconf-editor
-    gnome.gnome-tweaks
+    dconf-editor
+    gnome-tweaks
     gnomeExtensions.gnome-clipboard
     gnomeExtensions.clipboard-history
     gsound
@@ -362,6 +367,17 @@
       }    
     }
   '')];
+
+  # 23.5.24
+  # https://bbs.archlinux.org/viewtopic.php?pid=2155434#p2155434
+  services.pipewire.extraConfig.pipewire."92-jabra-fix" = {
+    context.properties = {
+#      default.clock.rate = 48000;
+      default.clock.quantum = 2048;
+      default.clock.min-quantum = 1024;
+      default.clock.max-quantum = 4096;
+    };
+  };
 
   # sony buzz devices
   services.udev.extraRules = ''
