@@ -41,7 +41,9 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
-  # Disable Speedport port scanns as log entries
+  systemd.services.NetworkManager-wait-online.enable = false;  
+
+# Disable Speedport port scanns as log entries
   networking.firewall.extraCommands = ''
     # Silence refusal of speedport scans
     iptables \
@@ -54,31 +56,34 @@
   '';
 
 
-  services.nebula.networks."nebula1" = {
-    ca = "/opt/nebula/ca.crt";
-    #tun.disable = true;
-    cert = "/opt/nebula/host.crt";
-    key = "/opt/nebula/host.key";
-    lighthouses = [ "192.168.100.1" ];
-    staticHostMap = { "192.168.100.1" = [ "18.196.133.48:4242" ]; };
-    firewall.outbound = [{
-      host = "any";
-      port = "any";
-      proto = "any";
-    }];
-    firewall.inbound = [{
-      host = "any";
-      port = "any";
-      proto = "any";
-    }];
-    #  relays = [ "192.168.100.100" ];
+#  services.nebula.networks."nebula1" = {
+#    enable = false;
+#    ca = "/opt/nebula/ca.crt";
+#    #tun.disable = true;
+#    cert = "/opt/nebula/host.crt";
+#    key = "/opt/nebula/host.key";
+#    lighthouses = [ "192.168.100.1" ];
+#    staticHostMap = { "192.168.100.1" = [ "18.196.133.48:4242" ]; };
+#    firewall.outbound = [{
+#      host = "any";
+#      port = "any";
+#      proto = "any";
+#    }];
+#    firewall.inbound = [{
+#      host = "any";
+#      port = "any";
+#      proto = "any";
+#    }];
+#    #  relays = [ "192.168.100.100" ];
+#  };
+  
+  services.zerotierone = {
+    enable = true;
+    joinNetworks = [
+      "e3918db4839f8cb9"
+      "632ea2908582e8d5"
+    ];
   };
-services.zerotierone = {
-  enable = true;
-  joinNetworks = [
-    "e3918db4839f8cb9"
-  ];
-};
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
 
@@ -101,8 +106,8 @@ services.zerotierone = {
   services.xserver.enable = true;
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
@@ -131,13 +136,15 @@ services.zerotierone = {
   hardware.rtl-sdr.enable = true;
   # Enable sound with pipewire.
   #sound.enable = true;
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
 
   hardware.nvidia = {
     modesetting.enable = true;
     #      prime.sync.allowExternalGpu = true;
     #      prime.offload.enable = true;
     nvidiaSettings = true;
+    open = false;
+    package = config.boot.kernelPackages.nvidiaPackages.latest;
   };
 
   security.rtkit.enable = true;
@@ -145,9 +152,9 @@ services.zerotierone = {
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
-    pulse.enable = true;
+ #   pulse.enable = true;
     # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
+    jack.enable = true;
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
@@ -174,6 +181,8 @@ services.zerotierone = {
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+
+  
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = let
@@ -183,6 +192,7 @@ services.zerotierone = {
   in with pkgs; [
     firefox
     thunderbird
+    claude-code
     vim
     mc
     dig
@@ -207,31 +217,26 @@ services.zerotierone = {
     git
     git-lfs
     gittyup
-    libsForQt5.kdenlive
+    gh
+    #libsForQt5.kdenlive
     mediainfo
     rclone
     tlp
     jhead
-    jetbrains.pycharm-professional
+    jetbrains.pycharm
+    vscodium
 
-    poedit
+    #poedit
     gettext
     aspell
     aspellDicts.de
     aspellDicts.en
     aspellDicts.en-computers
 
+    pre-commit
     pipenv
-    python311Full
-    python311Packages.virtualenv
-    python311Packages.pip
-    python311Packages.pyarrow
-    python311Packages.pillow
-    python311Packages.numpy
-    #streamlit
     pdm
     slack
-    beeper
     gnomeExtensions.vitals
     canon-cups-ufr2
     nodejs
@@ -252,7 +257,7 @@ services.zerotierone = {
     sdrpp
     # video
     losslesscut-bin
-    libsForQt5.kdenlive
+    #libsForQt5.kdenlive
     # Sound
     pavucontrol
     # building
@@ -275,12 +280,24 @@ services.zerotierone = {
     # clipboard manager, gnome extension
     dconf-editor
     gnome-tweaks
-    gnomeExtensions.gnome-clipboard
+    #gnomeExtensions.gnome-clipboard
     gnomeExtensions.clipboard-history
     gsound
     
     # peer network
     nebula
+
+    # ML
+    ollama
+
+    vlc
+
+    # Screenshot
+    ksnip
+
+    #microsoft
+    teams-for-linux
+    #microsoft-edge
   ];
 
   nixpkgs.config.permittedInsecurePackages = [
@@ -320,6 +337,17 @@ services.zerotierone = {
   };
   services.power-profiles-daemon.enable = false;
 
+  # Disable automatic suspend (for headless SSH access)
+  #systemd.sleep.extraConfig = ''
+  #  AllowSuspend=no
+  #  AllowHibernation=no
+  #  AllowHybridSleep=no
+  #  AllowSuspendThenHibernate=no
+  #'';
+
+  services.logind.lidSwitch = "ignore";
+  services.logind.lidSwitchExternalPower = "ignore";
+
   # flakes
   # nix.settings.experimental-features = [ "nix-command" "flakes" ];
   # Zsh
@@ -328,8 +356,10 @@ services.zerotierone = {
   # Enable java to set JAVA_HOME
   programs.java.enable = true;
 
+  programs.nix-ld.enable = true;
+
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ 5173 ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
@@ -348,42 +378,38 @@ services.zerotierone = {
   ## after 292115 is merged
   #services.pipewire.wireplumber.extraLuaConfig.main."99-custom" = '' 
   ## 12.3.24
-  services.pipewire.wireplumber.configPackages = [
-  (pkgs.writeTextDir "share/wireplumber/main.lua.d/99-alsa.lua" ''
-    alsa_monitor.rules = {
-      matches = {
-          {
-            -- Matches all sources.
-            { "node.name", "matches", "alsa_input.*" },
-          },
-          {
-            -- Matches all sinks.
-            { "node.name", "matches", "alsa_output.*" },
-          },
-        },
-
-      apply_properties = {
-        ["api.alsa.headroom"] = 1024,
-      }    
-    }
-  '')];
-
-  # 23.5.24
-  # https://bbs.archlinux.org/viewtopic.php?pid=2155434#p2155434
-  services.pipewire.extraConfig.pipewire."92-jabra-fix" = {
-    context.properties = {
-#      default.clock.rate = 48000;
-      default.clock.quantum = 2048;
-      default.clock.min-quantum = 1024;
-      default.clock.max-quantum = 4096;
-    };
-  };
+  #services.pipewire.wireplumber.configPackages = [
+  #(pkgs.writeTextDir "share/wireplumber/main.lua.d/99-alsa.lua" ''
+  #  alsa_monitor.rules = {
+  #    matches = {
+  #        {
+  #          -- Matches all sources.
+  #          { "node.name", "matches", "alsa_input.*" },
+  #        },
+  #        {
+  #          -- Matches all sinks.
+  #          { "node.name", "matches", "alsa_output.*" },
+  #        },
+  #      },
+#
+ #     apply_properties = {
+ #       ["api.alsa.headroom"] = 0,
+ #     }    
+ #   }
+ # '')];
 
   # sony buzz devices
   services.udev.extraRules = ''
-  SUBSYSTEMS=="usb", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0002", MODE="0666"
+    SUBSYSTEMS=="usb", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0002", MODE="0666"
+    ATTR{idVendor}=="1d50", ATTR{idProduct}=="6089", SYMLINK+="hackrf-one-%k", MODE="660", GROUP="plugdev"
   '';
 
+  # enable .local/bin in path
+  environment.localBinInPath = true;
 
+  #VSX
+  security.pki.certificateFiles = [
+    ./vsxca.pem
+  ];
 
 }

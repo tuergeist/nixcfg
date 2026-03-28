@@ -22,14 +22,18 @@
     # pdf tools
     pkgs.mupdf
 
-    pkgs.jetbrains.idea-ultimate
+    pkgs.jetbrains.idea
     pkgs.jetbrains.webstorm
 #    pkgs.maven
 #    pkgs.jdk19
 
     pkgs.nix-direnv
-    pkgs.poppler_utils
-  pkgs.poetry
+    pkgs.poppler-utils
+    pkgs.poetry
+
+    # testing
+    pkgs.python312Packages.selenium
+    pkgs.selenium-server-standalone
   ];
 
   # This value determines the Home Manager release that your
@@ -85,9 +89,9 @@
 
   programs.git = {
     enable = true;
-    userName  = "Christoph Becker";
-    userEmail = "mail@ch-becker.de";
-    aliases = {
+    settings.user.name  = "Christoph Becker";
+    settings.user.email = "mail@ch-becker.de";
+    settings.aliases = {
       ci = "commit";
       co = "checkout";
       st = "status";
@@ -117,8 +121,9 @@
     };
     "org/gnome/settings-daemon/plugins/color".night-light-enabled = true;
     "org/gnome/settings-daemon/plugins/power" = {
-      power-button-action = "hibernate";
-      sleep-inactive-ac-timeout = 7200;
+      power-button-action = "nothing";
+      sleep-inactive-ac-timeout = 0;  # 0 = never suspend
+      sleep-inactive-battery-timeout = 0;  # 0 = never suspend on battery
     };
     # blank after
     "org/gnome/desktop/session".idle-delay = 900;
@@ -155,4 +160,7 @@
 
   # set global LD LIb ath
   home.sessionVariables.LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
+
+  imports = [ ./rdp_dsktop.nix ];
+
 }
