@@ -235,7 +235,6 @@
 
     pre-commit
     pipenv
-    pdm
     slack
     gnomeExtensions.vitals
     canon-cups-ufr2
@@ -338,12 +337,12 @@
   services.power-profiles-daemon.enable = false;
 
   # Disable automatic suspend (for headless SSH access)
-  #systemd.sleep.extraConfig = ''
-  #  AllowSuspend=no
-  #  AllowHibernation=no
-  #  AllowHybridSleep=no
-  #  AllowSuspendThenHibernate=no
-  #'';
+  systemd.sleep.settings.Sleep = {
+    AllowSuspend = false;
+    AllowHibernation = false;
+    AllowHybridSleep = false;
+    AllowSuspendThenHibernate = false;
+  };
 
   services.logind.lidSwitch = "ignore";
   services.logind.lidSwitchExternalPower = "ignore";

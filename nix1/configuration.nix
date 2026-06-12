@@ -198,7 +198,6 @@
     streamlit
 
     pipenv
-    pdm
     python3Full
     gnome-browser-connector
     python311Packages.virtualenv
