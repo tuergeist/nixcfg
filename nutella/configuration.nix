@@ -19,6 +19,7 @@
   '';
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot.configurationLimit = 5;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -225,7 +226,7 @@
     jhead
     jetbrains.pycharm
     vscodium
-
+    esptool
     #poedit
     gettext
     aspell
