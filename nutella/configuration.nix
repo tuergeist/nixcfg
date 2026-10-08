@@ -35,6 +35,27 @@
     passwordLess = true;
   };
 
+  # SSH in stage 1 to type the LUKS passphrase remotely (LAN only):
+  #   ssh -p 2222 root@172.16.2.99
+  # Host key is not in the repo, create it once with
+  #   sudo mkdir -p /etc/secrets/initrd && sudo ssh-keygen -t ed25519 -N "" -f /etc/secrets/initrd/ssh_host_ed25519_key
+  boot.initrd.availableKernelModules = [ "e1000e" ];
+  boot.initrd.network = {
+    enable = true;
+    udhcpc.enable = true;
+    ssh = {
+      enable = true;
+      port = 2222;
+      hostKeys = [ "/etc/secrets/initrd/ssh_host_ed25519_key" ];
+      authorizedKeys = [
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCsPcs/lOuThM80yG/RlFcVdeTVjWfLjCJ4jq0znsxUArO3e8dyITs+KDlI8pv0bid9FD/mBoqn0NV6Mw7a2ICrahWmK6fqIlGO7hY3UXmETAuXAR7OMqgk7IyZc/QMIQiFcf5Yk5D65MhESmbM2V1U/7cfg/19vm15swgSTEZm/KYyhDO5eW/iKCfuSOxTaKZiodXi2t3paD1skfvIej3p4kEsyq3HMSx2BY6HMai7rLKbR7mZ2xWudokK51SFySM6PgJAyLwCBvCC2x+5K26Jx4xkz9BevFY0KJ4N63bm2tcP+vH1+fml5EiHVsSFoMoYQmxDaFpENZwHuZ32+XpqiK6a6oFhaju2I382usdl+kE31nmPFCQ8ESOtaYLlPTjrXHWlPkkjecQYhj4Y0BSAqWWutFpuRUQNylhQfzla4hEj0d7X1h1KLnLz0OPvDJAT44aaaPCbYQTgb/UBKJ47UmFDkDirePNN47kluox4GZ6UmVG7+Wr12s8OMi4aG2M= cb@nixos"
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCEv6YxesBTOkEqHWgWupk9m0kkU78dt/VwKxxjVMGcRbi5qdAZsynyB2szvIYRmQ+N136wenolp1hgztXE8jtZW9qT04JToPmXp2tReKNdSURgD0Yjyik9PnBEFn3DAXt6Vz5eyMupAsN8haoz03Bu3j4JBy+2SGEjQLhDETJq9ppUqMZ6Y4BYTvGiYXXZ5xYVOCU+ut/NlVpTyI1RDsLsDZ55H94GrESg6N9ZZnM/kgf2yp3k0JkHM9+5nxXrvkZMgYpCf9V2ABowTCzOuJASvLZ2QiP0nJWVIWCsTeuJMVGkEBWiBMRtDmxp7j852ehAg/Kwy7tKqtWgu1vfrSmPkTzVgevLmKD9hnpl0MvX4PRzGqnK+HOlaZVMZ7WL0r2x4x5Dy42tq7dpTuuXg/lActDbmHMIhDeUDkguxOaZ7k1hAOv9Hvzw6X7EkhxzVG/9X/RdBLzyhX2YrAI9VydcYIKpQj3ajMaIkw7tPNOY69yq2cV3PWadCVQqHbdMA2k= cb@nixos"
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCp8KJwyraNNlByrIOoOPJS0vCL8lrkpu3yb59tth5+ZyRRGsQLTm6v7WtHF1ArBXJIfEjaEnyMmeBV2y91XKLeBYttKrtBWVQBHKQrpfKG7ZftPLwiVrZ6Jboyzke8DJI0mmgz/UUtrbLohXSqz+hnqaElV+aQdGGaC+xyruUbo1bbMUkQPXcsdgUqK32Fsngtbe7StiilXfPoodubEo/0k/WgOJVxCTsHcVT39L10k79AUQKFSkpFnSUNJkVzWW3Q01bxb6H8XyX7jTPHUWPqU8HS2k5GYwzcZwobsb5v+mAsDOaLJlkicNiGxHt9t7ZA6k0rtsil9PYG8ZJuYXcOeBxjQRzqDdVYimI7d+hrQcMETzcjRnH+Ns87Vs2rUH3FAngM77eWW+mDooxcpLyYmVM5yY5ywycYLVzZOy3C+k4fvBSJDmx/ZoxGSfoBPY5gGXXX9fGMniXX2yep9g0DPt0U3+YOyTCxITCUWPD/V90PhxkHdj4u+GXIkKLUMSE= cb@MacBook-Pro-von-Christoph.local"
+      ];
+    };
+    postCommands = "echo cryptsetup-askpass >> /root/.profile";
+  };
+
   # Setup keyfile
   boot.initrd.secrets = { "/crypto_keyfile.bin" = null; };
 
