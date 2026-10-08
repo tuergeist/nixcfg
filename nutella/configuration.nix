@@ -85,6 +85,11 @@
       "632ea2908582e8d5"
     ];
   };
+
+  services.tailscale = {
+    enable = true;
+    openFirewall = true;
+  };
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
 
