@@ -24,10 +24,16 @@
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  # systemd in stage 1, needed for FIDO2 unlock of the root volume
-  boot.initrd.systemd.enable = true;
-  boot.initrd.luks.devices."luks-0664968d-53dc-4117-9a5d-6fae7a0c0f56".crypttabExtraOpts =
-    [ "fido2-device=auto" ];
+  # Unlock the root volume with the FIDO2 key if present, passphrase otherwise.
+  # Scripted initrd + fido2luks because the volume is LUKS1 (systemd-cryptenroll
+  # needs LUKS2).
+  # systemd stage 1 is the default by now; fido2luks only exists in the scripted one.
+  boot.initrd.systemd.enable = false;
+  boot.initrd.luks.fido2Support = true;
+  boot.initrd.luks.devices."luks-0664968d-53dc-4117-9a5d-6fae7a0c0f56".fido2 = {
+    credential = "d3a89798a35f7d9c408e8c46803d090ea8b4b01f5b90d54bf225d1ca217875f739c4c3b32ff7681dc26f1d807a0666f4";
+    passwordLess = true;
+  };
 
   # Setup keyfile
   boot.initrd.secrets = { "/crypto_keyfile.bin" = null; };
