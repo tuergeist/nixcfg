@@ -193,7 +193,15 @@
   in with pkgs; [
     firefox
     thunderbird
-    claude-code
+    llm-agents.claude-code
+    llm-agents.agent-deck
+    llm-agents.backlog-md
+    llm-agents.beads
+    llm-agents.bernstein
+    llm-agents.spec-kit
+    llm-agents.td
+    llm-agents.ralph-tui
+    tmux
     vim
     mc
     dig
@@ -232,7 +240,6 @@
     aspell
     aspellDicts.de
     aspellDicts.en
-    aspellDicts.en-computers
 
     pre-commit
     pipenv

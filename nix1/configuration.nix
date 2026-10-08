@@ -86,33 +86,32 @@
   };
 
   # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
+  services.displayManager.gdm.enable = true;
+  services.desktopManager.gnome.enable = true;
 
   # Enable and Configure keymap in X11
   services.xserver = {
     enable = true;
-    layout = "us";
-    xkbVariant = "altgr-intl";
+    xkb.layout = "us";
+    xkb.variant = "altgr-intl";
   };
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
   services.printing.drivers = [ pkgs.cnijfilter2 ];
   services.avahi.enable = true;
-  services.avahi.nssmdns = true;
+  services.avahi.nssmdns4 = true;
   # for a WiFi printer
   services.avahi.openFirewall = true;
 
   # steam https://github.com/NixOS/nixpkgs/issues/47932#issuecomment-447508411
-  hardware.opengl.driSupport32Bit = true;
+  hardware.graphics.enable32Bit = true;
 
   # Thunderbolt
   services.hardware.bolt.enable = true;
 
   # Enable sound with pipewire.
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -142,6 +141,12 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  # Home Manager global packages
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+  };
+
   # symlink chrome to google-chrome
   environment.systemPackages = let
     chromeSymlinkPackage = pkgs.writeShellScriptBin "google-chrome"
@@ -149,6 +154,15 @@
 
   in with pkgs; [
     thunderbird
+    llm-agents.claude-code
+    llm-agents.agent-deck
+    llm-agents.backlog-md
+    llm-agents.beads
+    llm-agents.bernstein
+    llm-agents.spec-kit
+    llm-agents.td
+    llm-agents.ralph-tui
+    tmux
     vim
     mc
     dig
@@ -170,7 +184,7 @@
     zsh
     git
     gittyup
-    libsForQt5.kdenlive
+    kdePackages.kdenlive
     mediainfo
     rclone
     tlp
@@ -188,22 +202,21 @@
     zsh
     powerline-fonts
     git
-    libsForQt5.kdenlive
+    kdePackages.kdenlive
     mediainfo
     #insync-v3
     rclone
     tlp
     # Python development
-    jetbrains.pycharm-professional
+    jetbrains.pycharm
 
     streamlit
 
     pipenv
-    python3Full
+    python3
     gnome-browser-connector
     python311Packages.virtualenv
     nebula
-    jetbrains.idea-ultimate
     jdk
     jq
     terminator
