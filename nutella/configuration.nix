@@ -24,6 +24,11 @@
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # systemd in stage 1, needed for FIDO2 unlock of the root volume
+  boot.initrd.systemd.enable = true;
+  boot.initrd.luks.devices."luks-0664968d-53dc-4117-9a5d-6fae7a0c0f56".crypttabExtraOpts =
+    [ "fido2-device=auto" ];
+
   # Setup keyfile
   boot.initrd.secrets = { "/crypto_keyfile.bin" = null; };
 
