@@ -214,6 +214,9 @@
     isNormalUser = true;
     description = "Christoph Becker";
     extraGroups = [ "networkmanager" "wheel" "docker" "dialout" "plugdev" ];
+    # User-Dienste ohne Anmeldung starten: der Multica-Daemon
+    # (systemd --user, multica-daemon.service) soll nach jedem Boot laufen.
+    linger = true;
   };
 
   # Allow unfree packages
